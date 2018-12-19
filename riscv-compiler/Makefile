@@ -26,7 +26,7 @@ build_riscv32_elf_7_1_1:
 	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
 		git checkout refs/tags/v20170612 -f ;\
 		git submodule update --init --recursive ;\
-		./configure --prefix=$(RISCV32_ELF_GCC_7_1_1_PATH) --with-arch=rv32g --with-abi=ilp32 ;\
+		CFLAGS="-O2 -static" ./configure --prefix=$(RISCV32_ELF_GCC_7_1_1_PATH) --with-arch=rv32g --with-abi=ilp32 ;\
 		$(MAKE)
 
 
@@ -36,7 +36,7 @@ build_riscv32_elf_8_1:
 	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
 		git checkout refs/tags/v20180629 -f ;\
 		git submodule update --init --recursive ;\
-		./configure --prefix=$(RISCV32_ELF_GCC_8_1_PATH) --with-arch=rv32g --with-abi=ilp32 ;\
+		CFLAGS="-O2 -static" ./configure --prefix=$(RISCV32_ELF_GCC_8_1_PATH) --with-arch=rv32g --with-abi=ilp32 ;\
 		$(MAKE)
 
 
@@ -46,7 +46,7 @@ build_riscv32_linux_8_1:
 	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
 		git checkout refs/tags/v20180629 -f ;\
 		git submodule update --init --recursive ;\
-		./configure --prefix=$(RISCV32_LINUX_GCC_8_1_PATH) --with-arch=rv32g ;\
+		CFLAGS="-O2 -static" ./configure --prefix=$(RISCV32_LINUX_GCC_8_1_PATH) --with-arch=rv32g ;\
 		$(MAKE) linux
 
 
@@ -60,7 +60,7 @@ build_riscv64_linux_8_1:
 	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
 		git checkout refs/tags/v20180629 -f ;\
 		git submodule update --init --recursive ;\
-		./configure --prefix=$(RISCV64_LINUX_GCC_8_1_PATH) --with-arch=rv64g ;\
+		CFLAGS="-O2 -static" ./configure --prefix=$(RISCV64_LINUX_GCC_8_1_PATH) --with-arch=rv64g ;\
 		$(MAKE) linux
 
 
