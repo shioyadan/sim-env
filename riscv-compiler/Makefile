@@ -54,6 +54,26 @@ build_riscv32_linux_8_1:
 # --- 64bit
 #
 
+RISCV64_LINUX_GCC_7_1_1_PATH = $(GCC_PREFIX_BASE)/riscv64-linux/7.1.1
+build_riscv64_linux_7_1_1:
+	mkdir -p $(GCC_PREFIX_BASE) ;\
+	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
+		git checkout refs/tags/v20170612 -f ;\
+		git submodule update --init --recursive ;\
+		CFLAGS="-O2 -static" ./configure --prefix=$(RISCV64_LINUX_GCC_7_1_1_PATH) --with-arch=rv64g ;\
+		$(MAKE) linux
+
+
+RISCV64_ELF_GCC_7_1_1_PATH = $(GCC_PREFIX_BASE)/riscv64-elf/7.1.1
+build_riscv64_elf_7_1_1:
+	mkdir -p $(GCC_PREFIX_BASE) ;\
+	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
+		git checkout refs/tags/v20170612 -f ;\
+		git submodule update --init --recursive ;\
+		CFLAGS="-O2 -static" ./configure --prefix=$(RISCV64_ELF_GCC_7_1_1_PATH) --with-arch=rv64g ;\
+		$(MAKE)
+
+
 RISCV64_LINUX_GCC_8_1_PATH = $(GCC_PREFIX_BASE)/riscv64-linux/8.1
 build_riscv64_linux_8_1:
 	mkdir -p $(GCC_PREFIX_BASE) ;\
@@ -63,6 +83,15 @@ build_riscv64_linux_8_1:
 		CFLAGS="-O2 -static" ./configure --prefix=$(RISCV64_LINUX_GCC_8_1_PATH) --with-arch=rv64g ;\
 		$(MAKE) linux
 
+
+RISCV64_ELF_GCC_8_1_PATH = $(GCC_PREFIX_BASE)/riscv64-elf/8.1
+build_riscv64_elf_8_1:
+	mkdir -p $(GCC_PREFIX_BASE) ;\
+	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
+		git checkout refs/tags/v20180629 -f ;\
+		git submodule update --init --recursive ;\
+		CFLAGS="-O2 -static" ./configure --prefix=$(RISCV64_ELF_GCC_8_1_PATH) --with-arch=rv64g ;\
+		$(MAKE)
 
 
 
