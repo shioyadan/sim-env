@@ -39,7 +39,7 @@ def dictionary_to_node(dic):
     return to_element(root_tag, dic[root_tag])
 
 
-def convert_files(dst_cmd_dir, src_cmd_dir):
+def convert_files(dst_cmd_dir, src_cmd_dir, onikiri2_arch_name):
     """ Enumerate source command files """
 
     if not os.path.isdir(src_cmd_dir):
@@ -63,11 +63,13 @@ def convert_files(dst_cmd_dir, src_cmd_dir):
         xml_data = {
             "Session": {
                 "Emulator": [{
-                    "@TargetArchitecture": "AlphaLinux",
+                    "@TargetArchitecture": onikiri2_arch_name,
                     "Processes": [{
                         "Process": [{
                             "@TargetBasePath": "./",
-                            "@TargetWorkPath": process["work"],
+                            # In onikiri, an upper directory must be specified
+                            # due to the difference of data structure
+                            "@TargetWorkPath": "../" + process["work"], 
                             "@Command": process["bin"],
                             "@CommandArguments": args,
                             "@STDIN": process["stdin"],
@@ -102,15 +104,18 @@ def main():
     parser.add_argument('ARCH_PREFIX', type=str, help='Specify an architecure name prefix. This script will output data to data/$(ARCH_PREFIX)')
     parser.add_argument('MARKER', type=str, 
         help='Specify an architectural name maker. This script search files from benchspec/CPU2017/xxx/run/* including this mark')
+    parser.add_argument('ONIKIRI2_ARCH_NAME', type=str, 
+        help='Specify an architectural name such as AlphaLinux and RISCV64Linux')
     args = parser.parse_args()
 
     marker = args.MARKER
     arch_prefix = args.ARCH_PREFIX
+    onikiri2_arch_name = args.ONIKIRI2_ARCH_NAME
     src_dir = args.OUTPUT_DIR + "/" + arch_prefix + "/cmd"
     dst_dir = args.OUTPUT_DIR + "/" + arch_prefix + "/cmd.xml"
 
     make_directory(dst_dir)
 
-    convert_files(dst_dir, src_dir)
+    convert_files(dst_dir, src_dir, onikiri2_arch_name)
 
 main()

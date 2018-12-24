@@ -23,13 +23,17 @@ OUTPUT_DIR      = ./data/
 #ARCH_PREFIX     = alpha
 
 # RISC-V 32
-CONFIG_FILE     = linux32-riscv-gcc711.cfg
-ARCH_PREFIX     = riscv32
+#CONFIG_FILE     = linux32-riscv-gcc711.cfg
+#ARCH_PREFIX     = riscv32
+
+# RISC-V 64
+CONFIG_FILE     = linux64-riscv64-gcc711.cfg
+ARCH_PREFIX     = riscv64
 
 
 # Target applications. int= SPEC CPU INT, fp = SPEC CPU FP
 TARGET_APPLICATIONS = int fp
-#TARGET_APPLICATIONS = 401.bzip2
+#TARGET_APPLICATIONS = 400.perlbench
 #TARGET_APPLICATIONS = 401.bzip2 429.mcf 433.milc 444.namd 445.gobmk 453.povray 458.sjeng 462.libquantum 470.lbm 471.omnetpp
 
 # Do not edit MAKEFILE_DIR

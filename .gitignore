@@ -1,3 +1,5 @@
 riscv-compiler/tmp
 riscv-qemu/tmp
-
+setup_speccpu2006/data
+setup_speccpu2017/data
+make_env.tmp

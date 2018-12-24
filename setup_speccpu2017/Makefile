@@ -32,6 +32,19 @@ MY_MARKER       = my_amd64  # is defined as "label" in the cfg file
 #ARCH_PREFIX     = riscv32
 #MY_MARKER       = my_riscv32  # is defined as "label" in the cfg file
 
+# RISC-V 64 Debug
+#CONFIG_FILE     = linux64-riscv64-gcc711-debug.cfg
+#ARCH_PREFIX     = riscv64-debug
+#MY_MARKER       = my_riscv64_debug  # is defined as "label" in the cfg file
+
+# RISC-V 64
+#CONFIG_FILE     = linux64-riscv64-gcc711.cfg
+#ARCH_PREFIX     = riscv64
+#MY_MARKER       = my_riscv64  # is defined as "label" in the cfg file
+
+
+ONIKIRI2_ARCH_NAME = RISCV64Linux
+
 
 # Target applications. intspeed= SPEC CPU INT Speed, fpspeed = SPEC CPU FP Speed
 TARGET_APPLICATIONS = intspeed fpspeed
@@ -83,7 +96,7 @@ extract_data:
 # Extract commands
 extract_command:
 	python3 setup_cpu2017_cmd.py $(SPECCPU2017_DIR) $(OUTPUT_DIR) $(ARCH_PREFIX) $(MY_MARKER)
-	python3 conv_cmd_onikiri2.py $(SPECCPU2017_DIR) $(OUTPUT_DIR) $(ARCH_PREFIX) $(MY_MARKER)
+	python3 conv_cmd_onikiri2.py $(SPECCPU2017_DIR) $(OUTPUT_DIR) $(ARCH_PREFIX) $(MY_MARKER) $(ONIKIRI2_ARCH_NAME)
 
 # Verify input data
 verify_input_data:
