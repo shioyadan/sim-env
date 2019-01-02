@@ -69,8 +69,6 @@ all: build
 
 extract: extract_binary extract_data extract_command
 
-pack:
-	cd data/$(ARCH_PREFIX); tar -cvzf ../../speccpu2017-$(ARCH_PREFIX).tar.gz *
 
 build:
 	# Copy config file
@@ -108,3 +106,32 @@ verify_input_data:
 clean_spec:
 	cd $(SPECCPU2017_DIR); \
 		runcpu --config $(CONFIG_FILE) --action realclean intspeed fpspeed
+
+INT_LIST = \
+	600.perlbench_s 602.gcc_s 620.omnetpp_s 648.exchange2_s \
+	631.deepsjeng_s 605.mcf_s 623.xalancbmk_s 625.x264_s \
+	641.leela_s     657.xz_s
+
+FP_LIST = \
+	619.lbm_s    627.cam4_s 644.nab_s       628.pop2_s \
+	603.bwaves_s 621.wrf_s  649.fotonik3d_s 638.imagick_s \
+	654.roms_s   607.cactuBSSN_s 
+
+pack_binary:
+	cd data/$(ARCH_PREFIX); \
+		tar -cvzf ../../../SPECCPU2017_INT_SPEED-$(ARCH_PREFIX)-bin.tar.gz $(patsubst .%,bin/%,$(suffix $(INT_LIST)))
+	cd data/$(ARCH_PREFIX); \
+		tar -cvzf ../../../SPECCPU2017_FP_SPEED-$(ARCH_PREFIX)-bin.tar.gz $(patsubst .%,bin/%,$(suffix $(FP_LIST)))
+
+pack_command:
+	cd data/$(ARCH_PREFIX)/cmd; tar -cvzf ../../../SPECCPU2017_INT_SPEED-verify.tar.gz $(INT_LIST:%=*%*.sh)
+	cd data/$(ARCH_PREFIX)/cmd; tar -cvzf ../../../SPECCPU2017_FP_SPEED-verify.tar.gz $(FP_LIST:%=*%*.sh)
+	cd data/$(ARCH_PREFIX)/cmd; tar -cvzf ../../../SPECCPU2017_INT_SPEED-$(ARCH_PREFIX)-cmd.tar.gz $(INT_LIST:%=*%*.json)
+	cd data/$(ARCH_PREFIX)/cmd; tar -cvzf ../../../SPECCPU2017_FP_SPEED-$(ARCH_PREFIX)-cmd.tar.gz $(FP_LIST:%=*%*.json)
+	cd data/$(ARCH_PREFIX)/cmd.xml; tar -cvzf ../../../SPECCPU2017_INT_SPEED-$(ARCH_PREFIX)-cmd-xml.tar.gz $(INT_LIST:%=*%*.xml)
+	cd data/$(ARCH_PREFIX)/cmd.xml; tar -cvzf ../../../SPECCPU2017_FP_SPEED-$(ARCH_PREFIX)-cmd-xml.tar.gz $(FP_LIST:%=*%*.xml)
+
+pack_data:
+	cd data/$(ARCH_PREFIX); tar -cvzf ../../SPECCPU2017_FP_SPEED-run.tar.gz $(FP_LIST:%=run/%)
+	cd data/$(ARCH_PREFIX); tar -cvzf ../../SPECCPU2017_INT_SPEED-run.tar.gz $(INT_LIST:%=run/%)
+
