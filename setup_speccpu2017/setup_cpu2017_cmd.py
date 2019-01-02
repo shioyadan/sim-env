@@ -173,9 +173,16 @@ def main():
     # Make output directory
     make_directory(dst_dir)
 
-    diff_commands = {'test': [], 'train': [], 'refspeed': []}
-    clean_commands = {'test': [], 'train': [], 'refspeed': []}
-    input_diff_commands = {'test': [], 'train': [], 'refspeed': []}
+    # Initialize command tables
+    diff_commands = {}
+    clean_commands = {}
+    input_diff_commands = {}
+    for name in bench_list:
+        for data_type in data_types:
+            key = name + "-" + data_type
+            diff_commands[key] = []
+            clean_commands[key] = []
+            input_diff_commands[key] = []
 
     successful_benchmarks = []
     err_benchmarks = []
@@ -186,7 +193,9 @@ def main():
         src_run = "%s/%s/run" % (src_root, name)
 
         # Remove a number prefix
-        raw_name = re.sub(r"^[\d]+\.", "", name) 
+        # raw_name = re.sub(r"^[\d]+\.", "", name) 
+        # Don't remove a number prefix
+        raw_name = name 
 
         for data_type in data_types:
 
@@ -219,7 +228,7 @@ def main():
                 index += 1
 
                 # bin/work path is specified by a relative path
-                bin_name = bin_dir + "/" + raw_name
+                bin_name = bin_dir + "/" + re.sub(r"^[\d]+\.", "", raw_name) 
                 work = run_dir + "/" + raw_name + "/" + data_type + "/input"
                 info["bin"] = os.path.relpath(bin_name, dst_dir)
                 info["work"] = os.path.relpath(work, dst_dir)
@@ -230,9 +239,10 @@ def main():
                 sys.stdout.flush() # flush=True is not supported in 3.2
 
                 # Add input diff
+                verify_file_name = raw_name + "-" + data_type
                 diff = "diff -r -s %s %s \n" % (src_dir, info["work"])
-                input_diff_commands[data_type].append("echo -- %s/%s\n" % (raw_name, data_type))
-                input_diff_commands[data_type].append(diff)
+                input_diff_commands[verify_file_name].append("echo -- %s/%s\n" % (raw_name, data_type))
+                input_diff_commands[verify_file_name].append(diff)
 
             cmd_file.close()
 
@@ -255,18 +265,20 @@ def main():
                 full_target_dir = run_dir + "/" + raw_name + "/" + data_type
                 rel_target_dir = os.path.relpath(full_target_dir, dst_dir)
 
+                verify_file_name = raw_name + "-" + data_type
+
                 # Make diff commannds
                 diff = "diff -s %s/input/%s %s/output/%s\n" % (
                     rel_target_dir, target_file,
                     rel_target_dir, target_file,
                 )
-                diff_commands[data_type].append("echo " + diff)
-                diff_commands[data_type].append(diff)
+                diff_commands[verify_file_name].append("echo " + diff)
+                diff_commands[verify_file_name].append(diff)
 
                 # Make clean commands
                 clean = "rm -f %s/input/%s\n" % (rel_target_dir, target_file)
-                clean_commands[data_type].append("echo " + clean)
-                clean_commands[data_type].append(clean)
+                clean_commands[verify_file_name].append("echo " + clean)
+                clean_commands[verify_file_name].append(clean)
 
             cmp_file.close()
 

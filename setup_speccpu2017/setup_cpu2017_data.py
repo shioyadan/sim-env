@@ -175,7 +175,9 @@ def main():
 
         for data_type in data_type_list:
             # Remove a number prefix
-            dst = "%s/%s" % (dst_root, re.sub(r"^[\d]+\.", "", name))
+            #dst = "%s/%s" % (dst_root, re.sub(r"^[\d]+\.", "", name))
+            # Ouput a number prefix
+            dst = "%s/%s" % (dst_root, name)
 
             # refrate -> refspeed if necessary
             mapped_data_type = data_type
