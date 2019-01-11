@@ -114,4 +114,4 @@ clean:
 		$(MAKE) distclean
 
 distclean:
-	rm $(GCC_PREFIX_BASE) -f -r
+	rm $(TMP_PATH) -f -r
