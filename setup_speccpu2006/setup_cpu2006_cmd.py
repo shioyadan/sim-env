@@ -116,6 +116,7 @@ def main():
     dst_dir = args.OUTPUT_DIR + "/" + marker + "/cmd"
     bin_dir = args.OUTPUT_DIR + "/" + marker + "/bin"
     run_dir = args.OUTPUT_DIR + "/" + marker + "/run"
+    verify_dir = args.OUTPUT_DIR + "/" + marker + "/verify"
 
     # Simple checking 
     if not os.path.exists(src_root):
@@ -137,9 +138,16 @@ def main():
 
     # Make output directory
     make_directory(dst_dir)
+    make_directory(verify_dir)
 
-    diff_commands = {'test': [], 'train': [], 'ref': []}
-    clean_commands = {'test': [], 'train': [], 'ref': []}
+    # Initialize command tables
+    diff_commands = {}
+    clean_commands = {}
+    for name in bench_list:
+        for data_type in data_types:
+            key = name + "-" + data_type
+            diff_commands[key] = []
+            clean_commands[key] = []
 
     for name in bench_list:
 
@@ -147,9 +155,10 @@ def main():
         src_run = "%s/%s/run" % (src_root, name)
 
         # Remove a number prefix
-        raw_name = re.sub("^[\d]+\.", "", name) 
+        #raw_name = re.sub("^[\d]+\.", "", name) 
+        raw_name = name
 
-        bin = bin_dir + "/" + raw_name
+        bin = bin_dir + "/" + re.sub("^[\d]+\.", "", name) 
         for type in data_types:
 
             # Find a run directory
@@ -174,7 +183,7 @@ def main():
                 index += 1
 
                 # bin/work path is specified by a relative path
-                bin = bin_dir + "/" + raw_name
+                bin = bin_dir + "/" +  re.sub("^[\d]+\.", "", name) 
                 work = run_dir + "/" + raw_name + "/" + type + "/input"
                 info["bin"] = os.path.relpath(bin, dst_dir)
                 info["work"] = os.path.relpath(work, dst_dir)
@@ -197,29 +206,30 @@ def main():
                 rel_target_dir = os.path.relpath(full_target_dir, dst_dir)
 
                 # Make diff commannds
-                diff = "diff %s/input/%s %s/output/%s\n" % (
+                diff = "diff -w %s/input/%s %s/output/%s\n" % (
                     rel_target_dir, target_file,
                     rel_target_dir, target_file,
                 )
-                diff_commands[type].append("echo " + diff)
-                diff_commands[type].append(diff)
+                verify_file_name = raw_name + "-" + type
+                diff_commands[verify_file_name].append("echo " + diff)
+                diff_commands[verify_file_name].append(diff)
 
                 # Make clean commands
                 clean = "rm -f %s/input/%s\n" % (rel_target_dir, target_file)
-                clean_commands[type].append("echo " + clean)
-                clean_commands[type].append(clean)
+                clean_commands[verify_file_name].append("echo " + clean)
+                clean_commands[verify_file_name].append(clean)
 
             cmp_file.close()
 
     #
     for type in diff_commands.keys():
-        file_name = "%s/verify_%s.sh" % (dst_dir, type)
+        file_name = "%s/verify_%s.sh" % (verify_dir, type)
         file = open(file_name, "w")
         file.writelines(diff_commands[type])
         file.close()
 
     for type in clean_commands.keys():
-        file_name = "%s/clean_%s.sh" % (dst_dir, type)
+        file_name = "%s/clean_%s.sh" % (verify_dir, type)
         file = open(file_name, "w")
         file.writelines(clean_commands[type])
         file.close()

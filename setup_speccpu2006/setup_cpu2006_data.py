@@ -131,8 +131,10 @@ dataTypes = ["test", "train", "ref"]
 for type in dataTypes:
     for name in bench_list:
         src = "%s/%s/data" % (src_root, name)
+        
         # Remove a number prefix
-        dst = "%s/%s" % (dst_root, re.sub("^[\d]+\.", "", name))
+        #dst = "%s/%s" % (dst_root, re.sub("^[\d]+\.", "", name))
+        dst = "%s/%s" % (dst_root, name)
 
         copy_node(src, dst, name, type)
 
