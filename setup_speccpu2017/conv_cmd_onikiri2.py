@@ -39,7 +39,7 @@ def dictionary_to_node(dic):
     return to_element(root_tag, dic[root_tag])
 
 
-def convert_files(dst_cmd_dir, src_cmd_dir, onikiri2_arch_name):
+def convert_files(dst_cmd_dir, src_cmd_dir, arch_prefix, onikiri2_arch_name):
     """ Enumerate source command files """
 
     if not os.path.isdir(src_cmd_dir):
@@ -66,11 +66,11 @@ def convert_files(dst_cmd_dir, src_cmd_dir, onikiri2_arch_name):
                     "@TargetArchitecture": onikiri2_arch_name,
                     "Processes": [{
                         "Process": [{
-                            "@TargetBasePath": "./",
                             # In onikiri, an upper directory must be specified
                             # due to the difference of data structure
-                            "@TargetWorkPath": "../" + process["work"], 
-                            "@Command": process["bin"],
+                            "@TargetBasePath": "../../",
+                            "@TargetWorkPath":  re.sub(r"^\.\./", "", process["work"]), 
+                            "@Command":         arch_prefix + "/" + re.sub(r"^\.\./", "", process["bin"]),
                             "@CommandArguments": args,
                             "@STDIN": process["stdin"],
                             "@STDOUT": process["stdout"],
@@ -108,7 +108,7 @@ def main():
         help='Specify an architectural name such as AlphaLinux and RISCV64Linux')
     args = parser.parse_args()
 
-    marker = args.MARKER
+    #marker = args.MARKER
     arch_prefix = args.ARCH_PREFIX
     onikiri2_arch_name = args.ONIKIRI2_ARCH_NAME
     src_dir = args.OUTPUT_DIR + "/" + arch_prefix + "/cmd"
@@ -116,6 +116,6 @@ def main():
 
     make_directory(dst_dir)
 
-    convert_files(dst_dir, src_dir, onikiri2_arch_name)
+    convert_files(dst_dir, src_dir, arch_prefix, onikiri2_arch_name)
 
 main()
