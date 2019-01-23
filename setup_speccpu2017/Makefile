@@ -18,9 +18,9 @@ BUILD_CPUS = 20
 #MY_MARKER       = my_aarch64  # is defined as "label" in the cfg file
 
 # x86-64
-CONFIG_FILE     = linux64-amd64-gcc472.cfg
-ARCH_PREFIX     = amd64
-MY_MARKER       = my_amd64  # is defined as "label" in the cfg file
+#CONFIG_FILE     = linux64-amd64-gcc472.cfg
+#ARCH_PREFIX     = amd64
+#MY_MARKER       = my_amd64  # is defined as "label" in the cfg file
 
 # Alpha
 #CONFIG_FILE     = linux64-alpha-gcc453.cfg
@@ -38,9 +38,9 @@ MY_MARKER       = my_amd64  # is defined as "label" in the cfg file
 #MY_MARKER       = my_riscv64_debug  # is defined as "label" in the cfg file
 
 # RISC-V 64
-#CONFIG_FILE     = linux64-riscv64-gcc711.cfg
-#ARCH_PREFIX     = riscv64
-#MY_MARKER       = my_riscv64  # is defined as "label" in the cfg file
+CONFIG_FILE     = linux64-riscv64-gcc711.cfg
+ARCH_PREFIX     = riscv64
+MY_MARKER       = my_riscv64  # is defined as "label" in the cfg file
 
 
 ONIKIRI2_ARCH_NAME = RISCV64Linux
@@ -119,9 +119,9 @@ FP_LIST = \
 
 pack_binary:
 	cd data/$(ARCH_PREFIX); \
-		tar -cvzf ../../../SPECCPU2017_INT_SPEED-$(ARCH_PREFIX)-bin.tar.gz $(patsubst .%,bin/%,$(suffix $(INT_LIST)))
+		tar -cvzf ../../SPECCPU2017_INT_SPEED-$(ARCH_PREFIX)-bin.tar.gz $(patsubst .%,bin/%,$(suffix $(INT_LIST)))
 	cd data/$(ARCH_PREFIX); \
-		tar -cvzf ../../../SPECCPU2017_FP_SPEED-$(ARCH_PREFIX)-bin.tar.gz $(patsubst .%,bin/%,$(suffix $(FP_LIST)))
+		tar -cvzf ../../SPECCPU2017_FP_SPEED-$(ARCH_PREFIX)-bin.tar.gz $(patsubst .%,bin/%,$(suffix $(FP_LIST)))
 
 pack_command:
 	cd data/$(ARCH_PREFIX)/cmd; tar -cvzf ../../../SPECCPU2017_INT_SPEED-verify.tar.gz $(INT_LIST:%=*%*.sh)

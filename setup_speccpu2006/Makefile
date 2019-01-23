@@ -35,7 +35,7 @@ ONIKIRI2_ARCH_NAME = RISCV64Linux
 
 # Target applications. int= SPEC CPU INT, fp = SPEC CPU FP
 TARGET_APPLICATIONS = int fp
-#TARGET_APPLICATIONS = 400.perlbench
+#TARGET_APPLICATIONS = 482.sphinx3
 #TARGET_APPLICATIONS = 401.bzip2 429.mcf 433.milc 444.namd 445.gobmk 453.povray 458.sjeng 462.libquantum 470.lbm 471.omnetpp
 
 # Do not edit MAKEFILE_DIR
