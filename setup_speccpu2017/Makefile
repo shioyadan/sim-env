@@ -38,9 +38,15 @@ BUILD_CPUS = 20
 #MY_MARKER       = my_riscv64_debug  # is defined as "label" in the cfg file
 
 # RISC-V 64
-CONFIG_FILE     = linux64-riscv64-gcc711.cfg
+#CONFIG_FILE     = linux64-riscv64-gcc711.cfg
+#ARCH_PREFIX     = riscv64
+#MY_MARKER       = my_riscv64  # is defined as "label" in the cfg file
+
+# 8.1 は以下のパッチを自力で当てる必要がある
+# https://patchwork.ozlabs.org/patch/1036036/
+CONFIG_FILE     = linux64-riscv64-gcc81.cfg
 ARCH_PREFIX     = riscv64
-MY_MARKER       = my_riscv64  # is defined as "label" in the cfg file
+MY_MARKER       = my_riscv64_81  # is defined as "label" in the cfg file
 
 
 ONIKIRI2_ARCH_NAME = RISCV64Linux
@@ -48,7 +54,7 @@ ONIKIRI2_ARCH_NAME = RISCV64Linux
 
 # Target applications. intspeed= SPEC CPU INT Speed, fpspeed = SPEC CPU FP Speed
 TARGET_APPLICATIONS = intspeed fpspeed
-#TARGET_APPLICATIONS = 625.x264_s
+#TARGET_APPLICATIONS = 602.gcc_s
 #TARGET_APPLICATIONS = 621.wrf_s
 #TARGET_APPLICATIONS = 600.perlbench_s
 #TARGET_APPLICATIONS = 603.bwaves_s 657.xz_s

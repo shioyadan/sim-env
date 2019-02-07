@@ -17,6 +17,8 @@ OUTPUT_DIR      = ./data/
 # x86-64
 #CONFIG_FILE     = linux64-amd64-gcc472.cfg
 #ARCH_PREFIX     = amd64
+#CONFIG_FILE     = linux64-amd64-gcc472-debug.cfg
+#ARCH_PREFIX     = amd64-debug
 
 # Alpha
 #CONFIG_FILE     = linux64-alpha-gcc453.cfg
@@ -27,15 +29,19 @@ OUTPUT_DIR      = ./data/
 #ARCH_PREFIX     = riscv32
 
 # RISC-V 64
-CONFIG_FILE     = linux64-riscv64-gcc711.cfg
+#CONFIG_FILE     = linux64-riscv64-gcc711.cfg
 #CONFIG_FILE     = linux64-riscv64-gcc711-debug.cfg
-ARCH_PREFIX     = riscv64
+#ARCH_PREFIX     = riscv64
+#ONIKIRI2_ARCH_NAME = RISCV64Linux
+
+CONFIG_FILE     = linux64-riscv64-gcc81.cfg
+ARCH_PREFIX     = riscv64-m64-gcc81
 ONIKIRI2_ARCH_NAME = RISCV64Linux
 
 
 # Target applications. int= SPEC CPU INT, fp = SPEC CPU FP
 TARGET_APPLICATIONS = int fp
-#TARGET_APPLICATIONS = 482.sphinx3
+#TARGET_APPLICATIONS = 453.povray
 #TARGET_APPLICATIONS = 401.bzip2 429.mcf 433.milc 444.namd 445.gobmk 453.povray 458.sjeng 462.libquantum 470.lbm 471.omnetpp
 
 # Do not edit MAKEFILE_DIR
