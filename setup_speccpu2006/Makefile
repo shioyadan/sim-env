@@ -25,7 +25,7 @@ OUTPUT_DIR      = ./data/
 #ARCH_PREFIX     = alpha
 
 # RISC-V 32
-#CONFIG_FILE     = linux32-riscv-gcc711.cfg
+#CONFIG_FILE     = linux32-riscv-gcc81.cfg
 #ARCH_PREFIX     = riscv32
 
 # RISC-V 64
