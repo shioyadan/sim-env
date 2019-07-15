@@ -25,8 +25,10 @@ OUTPUT_DIR      = ./data/
 #ARCH_PREFIX     = alpha
 
 # RISC-V 32
-#CONFIG_FILE     = linux32-riscv-gcc81.cfg
-#ARCH_PREFIX     = riscv32
+CONFIG_FILE     = linux32-riscv32-gcc81.cfg
+ARCH_PREFIX     = riscv32
+ONIKIRI2_ARCH_NAME = RISCV32Linux
+
 
 # RISC-V 64
 #CONFIG_FILE     = linux64-riscv64-gcc711.cfg
@@ -34,9 +36,9 @@ OUTPUT_DIR      = ./data/
 #ARCH_PREFIX     = riscv64
 #ONIKIRI2_ARCH_NAME = RISCV64Linux
 
-CONFIG_FILE     = linux64-riscv64-gcc81.cfg
-ARCH_PREFIX     = riscv64-m64-gcc81
-ONIKIRI2_ARCH_NAME = RISCV64Linux
+#CONFIG_FILE     = linux64-riscv64-gcc81.cfg
+#ARCH_PREFIX     = riscv64-m64-gcc81
+#ONIKIRI2_ARCH_NAME = RISCV64Linux
 
 
 # Target applications. int= SPEC CPU INT, fp = SPEC CPU FP
