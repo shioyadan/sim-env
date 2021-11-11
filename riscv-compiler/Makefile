@@ -87,7 +87,7 @@ build_riscv64_linux_8_1:
 	RISCV64_LINUX_GCC_TAG=refs/tags/v20180629 \
 	$(MAKE) build_riscv64_linux
 
-# LINUX 11.1
+# 11.1
 build_riscv64_linux_11_1:
 	RISCV64_LINUX_GCC_PATH=$(GCC_PREFIX_BASE)/riscv64-linux/11.1 \
 	RISCV64_LINUX_GCC_TAG=refs/tags/2021.09.21 \
@@ -112,12 +112,12 @@ build_riscv64_elf_7_1_1:
 	$(MAKE) build_riscv64_elf
 
 # 8.1
-build_riscv64_elf_11_1:
+build_riscv64_elf_8_1:
 	RISCV64_ELF_GCC_PATH=$(GCC_PREFIX_BASE)/riscv64-elf/8.1 \
 	RISCV64_ELF_GCC_TAG=refs/tags/v20180629 \
 	$(MAKE) build_riscv64_elf
 
-# LINUX 11.1
+# 11.1
 build_riscv64_elf_11_1:
 	RISCV64_ELF_GCC_PATH=$(GCC_PREFIX_BASE)/riscv64-elf/11.1 \
 	RISCV64_ELF_GCC_TAG=refs/tags/2021.09.21 \

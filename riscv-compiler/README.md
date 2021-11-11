@@ -2,7 +2,7 @@
 
 ## クイックスタート
 
-    ```
+    ```bash
     sudo make install_deps  # ビルドに必要なものを apt で入れる
     make clone              # gcc のコードをクローンしてくる
     
@@ -11,6 +11,8 @@
     make build_riscv64_elf_7_1_1 -j8    # 7.1.1 elf
     make build_riscv64_linux_8_1 -j8    # 8.1   linux
     make build_riscv64_elf_8_1 -j8      # 8.1   elf
+    make build_riscv64_linux_11_1 -j8   # 11.1  linux
+    make build_riscv64_elf_11_1 -j8     # 11.1  elf
     ```
 
 ## その他
