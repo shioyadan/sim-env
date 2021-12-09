@@ -14,17 +14,20 @@
 ###  1.1 SPEC2017 のisoイメージをマウント
 
 マウントポイントを dvd とする場合
-
-    mkdir dvd
-    su
-    mount -t iso9660 -o loop,ro cpu2017-1_0_2.iso dvd
-    exit
+```
+mkdir dvd
+su
+mount -t iso9660 -o loop,ro cpu2017-1_0_2.iso dvd
+exit
+```
 
 
 ###  1.2 インストール
 
-    cd dvd
-    ./install.sh
+```
+cd dvd
+./install.sh
+```
 
 コンパイル制御に使用する tool set の種類が表示されるので確認して Y
 
@@ -32,9 +35,11 @@
 (ex. /home/shioya/work/cpu2017)
 
 ###  1.3 アンマウント
-    su
-    umount dvd
-    exit
+```
+su
+umount dvd
+exit
+```
 
 
 ## 2. Makefile の中の SPECCPU のインストール先などを適宜書き換える
@@ -54,12 +59,14 @@
 
 * 設定例
 
+    ```
     SPECCPU2017_DIR = /home/shioya/work/gem5-work/work/benchmark/aarch64/installed/
     OUTPUT_DIR      = ./data/
     BUILD_CPUS      = 8
     
     CONFIG_FILE     = linux64-aarch64-gcc493.cfg
     ARCH_PREFIX     = aarch64
+    ```
 
 
 ## 3. SPECCPU のコンフィグファイルを適宜書き換える
@@ -67,30 +74,40 @@
 * インストール・ディレクトリの config ファイルにあるファイルをコピーして編集
 
 * アーキテクチャのビット数と，gcc のパス，ラベル名を編集
+    ```
     %   define  bits        64
     %   define  gcc_dir     /usr/.
 
     %define label my_amd64                # (2)      Use a label meaningful to *you*.
+    ```
 
 * コンパイラのパスの変更
     * クロスコンパイラを使う場合，外部からの指定だけではなくて，ここを書き換えないとだめくさい
+    ```
     %   define  gcc_dir        ~/opt/gcc/alpha/4.5.3/
     SPECLANG                = %{gcc_dir}/bin/alpha-unknown-linux-gnu-
+    ```
 
 * OPEN MP の無効化，static リンクの追加
     * LDFLAGS はリンク時に無視される & このオプションはリンク時にも使用される
+    ```
     intspeed,fpspeed:
       #EXTRA_OPTIMIZE = -fopenmp -DSPEC_OPENMP
       EXTRA_OPTIMIZE = -DSPEC_SUPPRESS_OPENMP -static
+    ```
 
 * gcc のコンパイルが通らないので追加
     * inline のデフォルトの仕様が変わったせい？ で，リンクに失敗する
     * 古い仕様に戻す
+        ```
         602.gcc_s,502.gcc_r:
            CPORTABILITY  = -fgnu89-inline
+        ```
     * あるいは，リンク時に同じ名前のものをまとめる
         * 元から書いてある「LDCFLAGS= -z muldefs」は gcc のバージョンによっては機能しないので，以下のようにする
+        ```
         LDCFLAGS        = -Xlinker -z -Xlinker muldefs -static 
+        ```
     * これは LDFLAGS ではなくて，LD*C*FLAGS だが，C 以外のこれに相当するオプションが不明
 
 ## 4. make の実行
@@ -99,15 +116,21 @@
 ### x86-64（ホストとターゲットが同じ）の場合
 
 * バイナリとデータの生成
+    ```
     make build
+    ```
 
 * 抽出
+    ```
     make extract_binary
     make extract_data
     make extract_command
+    ```
 
 * 圧縮
+    ```
     make pack
+    ```
 
 ### クロスコンパイラを使う場合
 
