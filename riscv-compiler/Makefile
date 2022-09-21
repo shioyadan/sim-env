@@ -190,8 +190,11 @@ docker-run:
 	$(DOCKER_COMMAND) 
 
 # Docker 外から gcc を直接起動
-docker-test:
-	$(DOCKER_COMMAND) /opt/gcc/bin/riscv64-unknown-linux-gnu-gcc main.c -static
+docker-test-version:
+	$(DOCKER_COMMAND) /usr/local/gcc/riscv64-linux/11.1/bin/riscv64-unknown-linux-gnu-gcc --version
+
+docker-test-compile:
+	$(DOCKER_COMMAND) /usr/local/gcc/riscv64-linux/11.1/bin/riscv64-unknown-linux-gnu-gcc test.c -static
 
 # 使用する際は事前に docker グループに自身を追加しておいてください
 docker-add-user:

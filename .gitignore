@@ -7,5 +7,5 @@ setup_speccpu2017/data
 setup_speccpu2017/work
 setup_speccpu2017/*.tar.gz
 make_env.tmp
-
+a.out
 
