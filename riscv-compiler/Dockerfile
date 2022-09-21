@@ -23,24 +23,25 @@ ARG TMP_PATH=/build-work
 COPY Makefile ${TMP_PATH}/
 
 # These variables are referred in Makefile
-# refs/tags/2021.09.21 is gcc ver 11.1
-ENV SIM_ENV_GCC_PREFIX_BASE /usr/local
-ENV RISCV64_LINUX_GCC_PATH /usr/local
-ENV RISCV64_LINUX_GCC_TAG refs/tags/2021.09.21
-ENV RISCV64_ELF_GCC_PATH /usr/local
-ENV RISCV64_ELF_GCC_TAG refs/tags/2021.09.21
-ENV RISCV32LINUX_GCC_PATH /usr/local
-ENV RISCV32_LINUX_GCC_TAG refs/tags/2021.09.21
-ENV RISCV32_ELF_GCC_PATH /usr/local
-ENV RISCV32_ELF_GCC_TAG refs/tags/2021.09.21
+ENV SIM_ENV_GCC_PREFIX_BASE /usr/local/gcc
 
 RUN \
     cd ${TMP_PATH} && \
-    make clone && \
-    make build_riscv64_linux -j"$(nproc)" && make clean && \
-    make build_riscv32_linux -j"$(nproc)" && make clean && \
-    make build_riscv64_elf -j"$(nproc)" && make clean && \
-    make build_riscv32_elf -j"$(nproc)" && make clean && \
+    make clone 
+
+ENV PATH $PATH:\
+/usr/local/gcc/riscv64-linux/11.1/bin:\
+/usr/local/gcc/riscv32-linux/11.1/bin:\
+/usr/local/gcc/riscv64-elf/11.1/bin:\
+/usr/local/gcc/riscv32-elf/11.1/bin
+
+
+RUN \
+    cd ${TMP_PATH} && \
+    make build_riscv64_linux_11_1 -j"$(nproc)" && make clean && \
+    make build_riscv32_linux_11_1 -j"$(nproc)" && make clean && \
+    make build_riscv64_elf_11_1 -j"$(nproc)" && make clean && \
+    make build_riscv32_elf_11_1 -j"$(nproc)" && make clean && \
     rm ${TMP_PATH} -f -r
 
 # Set root password

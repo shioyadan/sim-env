@@ -7,8 +7,9 @@
 #   that include $(ARCH_PREFIX).
 #
 
-SPECCPU2006_DIR = /home/shioya/work/gem5-work/work/benchmark/aarch64/installed/
+SPECCPU2006_DIR = /work/work/cpu2006
 OUTPUT_DIR      = ./data/
+BUILD_CPUS = $(shell nproc)
 
 # ARM AArch64
 #CONFIG_FILE     = linux64-aarch64-gcc493.cfg
@@ -25,16 +26,15 @@ OUTPUT_DIR      = ./data/
 #ARCH_PREFIX     = alpha
 
 # RISC-V 32
-CONFIG_FILE     = linux32-riscv32-gcc81.cfg
-ARCH_PREFIX     = riscv32
-ONIKIRI2_ARCH_NAME = RISCV32Linux
-
+# CONFIG_FILE     = linux32-riscv32-gcc81.cfg
+# ARCH_PREFIX     = riscv32
+# ONIKIRI2_ARCH_NAME = RISCV32Linux
 
 # RISC-V 64
-#CONFIG_FILE     = linux64-riscv64-gcc711.cfg
 #CONFIG_FILE     = linux64-riscv64-gcc711-debug.cfg
-#ARCH_PREFIX     = riscv64
-#ONIKIRI2_ARCH_NAME = RISCV64Linux
+CONFIG_FILE     = linux64-riscv64-gcc111.cfg
+ARCH_PREFIX     = riscv64
+ONIKIRI2_ARCH_NAME = RISCV64Linux
 
 #CONFIG_FILE     = linux64-riscv64-gcc81.cfg
 #ARCH_PREFIX     = riscv64-m64-gcc81
@@ -66,11 +66,11 @@ build:
 	# Copy config file
 	cp $(CONFIG_FILE) $(SPECCPU2006_DIR)/config
 	cd ${SPECCPU2006_DIR}; \
-		runspec --config ${CONFIG_FILE} --action runsetup --size test --ignore_errors --tune=base $(TARGET_APPLICATIONS)
+		runspec --config ${CONFIG_FILE} --action runsetup --size test --ignore_errors --tune=base --define build_ncpus=$(BUILD_CPUS) $(TARGET_APPLICATIONS)
 	cd ${SPECCPU2006_DIR}; \
-		runspec --config ${CONFIG_FILE} --action runsetup --size train --ignore_errors --tune=base $(TARGET_APPLICATIONS)
+		runspec --config ${CONFIG_FILE} --action runsetup --size train --ignore_errors --tune=base --define build_ncpus=$(BUILD_CPUS) $(TARGET_APPLICATIONS)
 	cd ${SPECCPU2006_DIR}; \
-		runspec --config ${CONFIG_FILE} --action runsetup --size ref --ignore_errors --tune=base $(TARGET_APPLICATIONS)
+		runspec --config ${CONFIG_FILE} --action runsetup --size ref --ignore_errors --tune=base --define build_ncpus=$(BUILD_CPUS) $(TARGET_APPLICATIONS)
 
 
 # Extract binary files
@@ -118,3 +118,13 @@ pack_command:
 pack_data:
 	cd data/$(ARCH_PREFIX); tar -cvzf ../../SPECCPU2006_FP-run.tar.gz $(FP_LIST:%=run/%)
 	cd data/$(ARCH_PREFIX); tar -cvzf ../../SPECCPU2006_INT-run.tar.gz $(INT_LIST:%=run/%)
+
+
+# 事前に riscv-compiler 内で make docker-build を行い，クロスコンパイラをビルドしてください
+# make docker-run で Docker 内シェルに入り，そこから SPEC の make を行って下さい
+DOCKER_CONTAINER_NAME = shioyadan-sim-env-riscv-compiler
+docker-run:
+	docker run -ti --rm \
+	-v $(PWD):/work -e USER_ID=$(shell id -u) -e GROUP_ID=$(shell id -g) \
+	$(DOCKER_CONTAINER_NAME):latest 
+

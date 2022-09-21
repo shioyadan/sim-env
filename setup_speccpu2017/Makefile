@@ -7,9 +7,9 @@
 #   that include $(ARCH_PREFIX).
 #
 
-SPECCPU2017_DIR = /home/shioya/work/gem5-work/work/benchmark/cpu2017/installed
+SPECCPU2017_DIR = /work/work/cpu2017
 OUTPUT_DIR      = ./data/
-BUILD_CPUS = 20
+BUILD_CPUS = $(shell nproc)
 
 
 # ARM AArch64
@@ -44,10 +44,13 @@ BUILD_CPUS = 20
 
 # 8.1 は以下のパッチを自力で当てる必要がある
 # https://patchwork.ozlabs.org/patch/1036036/
-CONFIG_FILE     = linux64-riscv64-gcc81.cfg
-ARCH_PREFIX     = riscv64
-MY_MARKER       = my_riscv64_81  # is defined as "label" in the cfg file
+# CONFIG_FILE     = linux64-riscv64-gcc81.cfg
+# ARCH_PREFIX     = riscv64
+# MY_MARKER       = my_riscv64_81  # is defined as "label" in the cfg file
 
+CONFIG_FILE     = linux64-riscv64-gcc111.cfg
+ARCH_PREFIX     = riscv64
+MY_MARKER       = my_riscv64_111  # is defined as "label" in the cfg file
 
 ONIKIRI2_ARCH_NAME = RISCV64Linux
 
@@ -140,4 +143,13 @@ pack_command:
 pack_data:
 	cd data/$(ARCH_PREFIX); tar -cvzf ../../SPECCPU2017_FP_SPEED-run.tar.gz $(FP_LIST:%=run/%)
 	cd data/$(ARCH_PREFIX); tar -cvzf ../../SPECCPU2017_INT_SPEED-run.tar.gz $(INT_LIST:%=run/%)
+
+
+# 事前に riscv-compiler 内で make docker-build を行い，クロスコンパイラをビルドしてください
+# make docker-run で Docker 内シェルに入り，そこから SPEC の make を行って下さい
+DOCKER_CONTAINER_NAME = shioyadan-sim-env-riscv-compiler
+docker-run:
+	docker run -ti --rm \
+	-v $(PWD):/work -e USER_ID=$(shell id -u) -e GROUP_ID=$(shell id -g) \
+	$(DOCKER_CONTAINER_NAME):latest 
 
