@@ -1,4 +1,5 @@
 riscv-compiler/tmp
+riscv-compiler/*.tar
 riscv-qemu/tmp
 setup_speccpu2006/data
 setup_speccpu2006/work

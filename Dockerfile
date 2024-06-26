@@ -3,16 +3,14 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND noninteractive
 ENV GIT_SSL_NO_VERIFY 1
 
-# python3 is necessary to build gcc
+# 1行目：GCC
+# 2行目：QEMU
 RUN apt-get update && \
     apt-get install tzdata -y && \
     apt-get install --no-install-recommends -y \
-        autoconf automake autotools-dev curl \
-        libmpc-dev libmpfr-dev libgmp-dev \
-        gawk build-essential bison flex texinfo \
-        gperf libtool patchutils bc zlib1g-dev libexpat-dev \
-        git python3 \
-        bash-completion && \
+        autoconf automake autotools-dev curl libmpc-dev libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev python3 \
+        build-essential python3 python3-venv sphinx ninja-build meson libglib2.0-dev flex bison \
+        git wget ssh bash-completion && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

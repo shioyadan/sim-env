@@ -1,0 +1,7 @@
+tmp/
+README.md
+*.tar
+riscv-compiler
+riscv-qemu
+setup_speccpu2006  
+setup_speccpu2017
