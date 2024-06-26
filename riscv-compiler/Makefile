@@ -34,6 +34,9 @@ GCC_GIT_TAG_1110=refs/tags/2021.09.21
 GCC_VERSION_1320=13.2
 GCC_GIT_TAG_1320=refs/tags/2023.10.12
 
+GCC_VERSION_1410=14.1
+GCC_GIT_TAG_1410=refs/tags/2024.04.12
+
 TARGET_ELF32   = $(ALL_SRCS:%=build_riscv32_elf_%)
 TARGET_LINUX32 = $(ALL_SRCS:%=build_riscv32_linux_%)
 TARGET_ELF64   = $(ALL_SRCS:%=build_riscv64_elf_%)
@@ -106,6 +109,42 @@ $(TARGET_LINUX64):
 		$(MAKE) clean ;\
 		$(MAKE) linux
 
+
+build_riscv32_elf_1410:
+	$(eval VERSION_ID=$(patsubst build_riscv32_elf_%,%,$@))
+	$(eval GCC_VERSION=$(GCC_VERSION_$(VERSION_ID)))
+	$(eval GCC_GIT_TAG=$(GCC_GIT_TAG_$(VERSION_ID)))
+	$(eval GCC_PATH=$(SIM_ENV_GCC_PREFIX_BASE)/riscv32-elf/$(GCC_VERSION))
+	@echo version: $(GCC_VERSION)
+	@echo git: $(GCC_GIT_TAG)
+	mkdir -p $(SIM_ENV_GCC_PREFIX_BASE)
+	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
+		git checkout $(GCC_GIT_TAG) -f ;\
+		git submodule update --init --recursive -f
+	cd $(TMP_PATH)/riscv-gnu-toolchain/gcc ;\
+		git checkout cd0059a1976 -f
+	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
+		./configure --prefix=$(GCC_PATH) --with-arch=rv32gc;\
+		$(MAKE) clean ;\
+		$(MAKE)
+
+build_riscv64_linux_1410:
+	$(eval VERSION_ID=$(patsubst build_riscv64_linux_%,%,$@))
+	$(eval GCC_VERSION=$(GCC_VERSION_$(VERSION_ID)))
+	$(eval GCC_GIT_TAG=$(GCC_GIT_TAG_$(VERSION_ID)))
+	$(eval GCC_PATH=$(SIM_ENV_GCC_PREFIX_BASE)/riscv64-linux/$(GCC_VERSION))
+	@echo version: $(GCC_VERSION)
+	@echo git: $(GCC_GIT_TAG)
+	mkdir -p $(SIM_ENV_GCC_PREFIX_BASE)
+	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
+		git checkout $(GCC_GIT_TAG) -f ;\
+		git submodule update --init --recursive -f
+	cd $(TMP_PATH)/riscv-gnu-toolchain/gcc ;\
+		git checkout cd0059a1976 -f
+	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
+		./configure --prefix=$(GCC_PATH) --with-arch=rv64gc;\
+		$(MAKE) clean ;\
+		$(MAKE) linux
 
 # pull --tags はリモートからのタグの取得
 clone:
