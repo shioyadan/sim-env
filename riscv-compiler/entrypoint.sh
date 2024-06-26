@@ -1,13 +1,22 @@
 #!/bin/bash
 
-# This file is used in Docker
-# Executed passed commands with passed uid/gid
-echo "(UID:$USER_ID,GID:$GROUP_ID): $@"
-usermod -u $USER_ID -o user
+# ユーザー名と ID を書き換える
+# echo "(UID:$USER_ID,GID:$GROUP_ID,NAME:$USER_NAME): $@"
+usermod -l $USER_NAME user
+usermod -u $USER_ID -o $USER_NAME
 groupmod -g $GROUP_ID user
 
-# You have to use gosu due to an issue regarding tty.
-# "make serve" does not work if su is used.
-#su user -c "$@"
-exec /usr/sbin/gosu user "$@"
+# setpriv では HOME などの環境変数が設定されないので，手動で設定する．
+export HOME=/home/$USER_NAME
+export USER=$USER_NAME
+
+# cd してからコマンドを実行するシェルスクリプトを生成
+# setpriv 前だと，docker 内の root では移動できない場所が指定されることがあるため
+echo "#!/bin/bash" > /usr/local/bin/to_user_mode.sh
+echo "cd $ENTRY_POINT_PATH" >> /usr/local/bin/to_user_mode.sh
+echo "$@" >> /usr/local/bin/to_user_mode.sh
+chmod +x /usr/local/bin/to_user_mode.sh
+
+# setpriv によってユーザーモードで実行
+exec setpriv --reuid=$USER_ID --regid=$GROUP_ID --init-groups /usr/local/bin/to_user_mode.sh
 

@@ -1,5 +1,4 @@
-#FROM ubuntu:20.04
-FROM debian:bullseye-slim
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV GIT_SSL_NO_VERIFY 1
@@ -11,38 +10,30 @@ RUN apt-get update && \
         autoconf automake autotools-dev curl \
         libmpc-dev libmpfr-dev libgmp-dev \
         gawk build-essential bison flex texinfo \
-        gperf libtool patchutils bc zlib1g-dev libexpat-dev gosu \
-        git python3 && \
+        gperf libtool patchutils bc zlib1g-dev libexpat-dev \
+        git python3 \
+        bash-completion && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-ARG WORK_PATH=/work
-ARG TMP_PATH=/build-work
+# イメージ内にインストールする場合
+# 
+# ARG TMP_PATH=/tmp
+# 
+# COPY Makefile ${TMP_PATH}/
+# 
+# RUN \
+#     cd ${TMP_PATH} && \
+#     make clone 
+# # インストール先
+# ENV SIM_ENV_GCC_PREFIX_BASE /opt/gcc
+# 
+# RUN \
+#     cd ${TMP_PATH} && \
+#     make build_riscv32_elf_1320 -j"$(nproc)" && make clean && \
+#     make build_riscv64_linux_1320 -j"$(nproc)" && make clean && \
+#     rm ${TMP_PATH} -f -r
 
-
-COPY Makefile ${TMP_PATH}/
-
-# These variables are referred in Makefile
-ENV SIM_ENV_GCC_PREFIX_BASE /usr/local/gcc
-
-RUN \
-    cd ${TMP_PATH} && \
-    make clone 
-
-ENV PATH $PATH:\
-/usr/local/gcc/riscv64-linux/11.1/bin:\
-/usr/local/gcc/riscv32-linux/11.1/bin:\
-/usr/local/gcc/riscv64-elf/11.1/bin:\
-/usr/local/gcc/riscv32-elf/11.1/bin
-
-
-RUN \
-    cd ${TMP_PATH} && \
-    make build_riscv64_linux_11_1 -j"$(nproc)" && make clean && \
-    make build_riscv32_linux_11_1 -j"$(nproc)" && make clean && \
-    make build_riscv64_elf_11_1 -j"$(nproc)" && make clean && \
-    make build_riscv32_elf_11_1 -j"$(nproc)" && make clean && \
-    rm ${TMP_PATH} -f -r
 
 # Set root password
 RUN echo "root:root" | chpasswd
@@ -61,7 +52,3 @@ COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/bin/bash"]
-
-# Set a work directory
-WORKDIR ${WORK_PATH}
-

@@ -3,134 +3,109 @@
 # 特に，submodule の update が失敗しやすい
 #
 
-
 ifndef SIM_ENV_GCC_PREFIX_BASE
 # Must specify using a absolute path
 # "$(shell echo ~)" means the absolute path of a home directory
 SIM_ENV_GCC_PREFIX_BASE = $(shell echo ~)/opt/gcc
 endif
-TMP_PATH=$(shell pwd)/tmp
+
+# Docker の追加オプション
+ifdef SIM_ENV_USE_TMPFS
+DOCKER_MOUNT_DEV_SHM = -v /dev/shm:/tmp
+endif
+
+# ビルド時の中間ディレクトリ
+TMP_PATH=/tmp/riscv-compiler
+
+# 新しいバージョンを追加した際は，このリストにサフィックスを追加する
+# 追加すると make のターゲットが自動で生成される
+ALL_SRCS = 0711 0810 1110 1320
+
+# バージョン番号とタグのリスト
+GCC_VERSION_0711=7.1.1 
+GCC_GIT_TAG_0711=refs/tags/v20170612 
+
+GCC_VERSION_0810=8.1
+GCC_GIT_TAG_0810=refs/tags/v20180629 
+
+GCC_VERSION_1110=11.1
+GCC_GIT_TAG_1110=refs/tags/2021.09.21
+
+GCC_VERSION_1320=13.2
+GCC_GIT_TAG_1320=refs/tags/2023.10.12
+
+TARGET_ELF32   = $(ALL_SRCS:%=build_riscv32_elf_%)
+TARGET_LINUX32 = $(ALL_SRCS:%=build_riscv32_linux_%)
+TARGET_ELF64   = $(ALL_SRCS:%=build_riscv64_elf_%)
+TARGET_LINUX64 = $(ALL_SRCS:%=build_riscv64_linux_%)
 
 
-all:
-	@echo $(SIM_ENV_GCC_PREFIX_BASE)
-
-#
-# --- 32bit ELF
-#
-
-# ELF 7.1.1
-build_riscv32_elf_7_1_1:
-	RISCV32_ELF_GCC_PATH=$(SIM_ENV_GCC_PREFIX_BASE)/riscv32-elf/7.1.1/ \
-	RISCV32_ELF_GCC_TAG=refs/tags/v20170612 \
-	$(MAKE) build_riscv32_elf
-
-# ELF 8.1
-build_riscv32_elf_8_1:
-	RISCV32_ELF_GCC_PATH=$(SIM_ENV_GCC_PREFIX_BASE)/riscv32-elf/8.1/ \
-	RISCV32_ELF_GCC_TAG=refs/tags/v20180629 \
-	$(MAKE) build_riscv32_elf
-
-# ELF 11.1
-build_riscv32_elf_11_1:
-	RISCV32_ELF_GCC_PATH=$(SIM_ENV_GCC_PREFIX_BASE)/riscv32-elf/11.1/ \
-	RISCV32_ELF_GCC_TAG=refs/tags/2021.09.21 \
-	$(MAKE) build_riscv32_elf
- 
 # elf: riscv32-unknown-elf
 # ilp32: 32-bit soft-float
-build_riscv32_elf:
-	mkdir -p $(SIM_ENV_GCC_PREFIX_BASE) ;\
+#   soft float をデフォルトにする場合は configure に --with-abi=ilp32 をつける
+
+# $(patsubst build_riscv32_elf_%,%,$@) はターゲットから 711 や 81 などのバージョン番号部分を切り出している
+# $(eval GCC_VERSION=$(GCC_VERSION_$(VERSION_ID))) は，VERSION_ID が 711 なら，GCC_VERSION_711 を参照する
+$(TARGET_ELF32):
+	$(eval VERSION_ID=$(patsubst build_riscv32_elf_%,%,$@))
+	$(eval GCC_VERSION=$(GCC_VERSION_$(VERSION_ID)))
+	$(eval GCC_GIT_TAG=$(GCC_GIT_TAG_$(VERSION_ID)))
+	$(eval GCC_PATH=$(SIM_ENV_GCC_PREFIX_BASE)/riscv32-elf/$(GCC_VERSION))
+	@echo version: $(GCC_VERSION)
+	@echo git: $(GCC_GIT_TAG)
+	mkdir -p $(SIM_ENV_GCC_PREFIX_BASE)
 	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
-		git checkout $(RISCV32_ELF_GCC_TAG) -f ;\
+		git checkout $(GCC_GIT_TAG) -f ;\
 		git submodule update --init --recursive -f ;\
-		CFLAGS="-O2 -static" ./configure --prefix=$(RISCV32_ELF_GCC_PATH) --with-arch=rv32g --with-abi=ilp32 ;\
+		./configure --prefix=$(GCC_PATH) --with-arch=rv32gc;\
+		$(MAKE) clean ;\
 		$(MAKE)
 
-
-#
-# --- 32bit Linux
-#
-# LINUX 8.1
-build_riscv32_linux_8_1:
-	RISCV32_LINUX_GCC_PATH=$(SIM_ENV_GCC_PREFIX_BASE)/riscv32-linux/8.1 \
-	RISCV32_LINUX_GCC_TAG=refs/tags/v20180629 \
-	$(MAKE) build_riscv32_linux
-
-# LINUX 11.1
-build_riscv32_linux_11_1:
-	RISCV32_LINUX_GCC_PATH=$(SIM_ENV_GCC_PREFIX_BASE)/riscv32-linux/11.1 \
-	RISCV32_LINUX_GCC_TAG=refs/tags/2021.09.21 \
-	$(MAKE) build_riscv32_linux
-
-build_riscv32_linux:
-	mkdir -p $(SIM_ENV_GCC_PREFIX_BASE) ;\
+$(TARGET_LINUX32):
+	$(eval VERSION_ID=$(patsubst build_riscv32_linux_%,%,$@))
+	$(eval GCC_VERSION=$(GCC_VERSION_$(VERSION_ID)))
+	$(eval GCC_GIT_TAG=$(GCC_GIT_TAG_$(VERSION_ID)))
+	$(eval GCC_PATH=$(SIM_ENV_GCC_PREFIX_BASE)/riscv32-linux/$(GCC_VERSION))
+	@echo version: $(GCC_VERSION)
+	@echo git: $(GCC_GIT_TAG)
+	mkdir -p $(SIM_ENV_GCC_PREFIX_BASE)
 	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
-		git checkout $(RISCV32_LINUX_GCC_TAG) -f ;\
+		git checkout $(GCC_GIT_TAG) -f ;\
 		git submodule update --init --recursive -f ;\
-		CFLAGS="-O2 -static" ./configure --prefix=$(RISCV32_LINUX_GCC_PATH) --with-arch=rv32g ;\
+		./configure --prefix=$(GCC_PATH) --with-arch=rv32gc;\
+		$(MAKE) clean ;\
 		$(MAKE) linux
 
-
-#
-# --- 64bit Linux
-#
-
-# 7.1.1
-build_riscv64_linux_7_1_1:
-	RISCV64_LINUX_GCC_PATH=$(SIM_ENV_GCC_PREFIX_BASE)/riscv64-linux/7.1.1 \
-	RISCV64_LINUX_GCC_TAG=refs/tags/v20170612 \
-	$(MAKE) build_riscv64_linux
-
-# 8.1
-build_riscv64_linux_8_1:
-	RISCV64_LINUX_GCC_PATH=$(SIM_ENV_GCC_PREFIX_BASE)/riscv64-linux/8.1 \
-	RISCV64_LINUX_GCC_TAG=refs/tags/v20180629 \
-	$(MAKE) build_riscv64_linux
-
-# 11.1
-build_riscv64_linux_11_1:
-	RISCV64_LINUX_GCC_PATH=$(SIM_ENV_GCC_PREFIX_BASE)/riscv64-linux/11.1 \
-	RISCV64_LINUX_GCC_TAG=refs/tags/2021.09.21 \
-	$(MAKE) build_riscv64_linux
-
-build_riscv64_linux:
-	mkdir -p $(SIM_ENV_GCC_PREFIX_BASE) ;\
+$(TARGET_ELF64):
+	$(eval VERSION_ID=$(patsubst build_riscv64_elf_%,%,$@))
+	$(eval GCC_VERSION=$(GCC_VERSION_$(VERSION_ID)))
+	$(eval GCC_GIT_TAG=$(GCC_GIT_TAG_$(VERSION_ID)))
+	$(eval GCC_PATH=$(SIM_ENV_GCC_PREFIX_BASE)/riscv64-elf/$(GCC_VERSION))
+	@echo version: $(GCC_VERSION)
+	@echo git: $(GCC_GIT_TAG)
+	mkdir -p $(SIM_ENV_GCC_PREFIX_BASE)
 	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
-		git checkout $(RISCV64_LINUX_GCC_TAG) -f ;\
-		git submodule update --init --recursive -f;\
-		CFLAGS="-O2 -static" ./configure --prefix=$(RISCV64_LINUX_GCC_PATH) --with-arch=rv64g ;\
-		$(MAKE) linux
-
-#
-# --- 64bit ELF
-#
-
-# 7.1.1
-build_riscv64_elf_7_1_1:
-	RISCV64_ELF_GCC_PATH=$(SIM_ENV_GCC_PREFIX_BASE)/riscv64-elf/7.1.1 \
-	RISCV64_ELF_GCC_TAG=refs/tags/v20170612 \
-	$(MAKE) build_riscv64_elf
-
-# 8.1
-build_riscv64_elf_8_1:
-	RISCV64_ELF_GCC_PATH=$(SIM_ENV_GCC_PREFIX_BASE)/riscv64-elf/8.1 \
-	RISCV64_ELF_GCC_TAG=refs/tags/v20180629 \
-	$(MAKE) build_riscv64_elf
-
-# 11.1
-build_riscv64_elf_11_1:
-	RISCV64_ELF_GCC_PATH=$(SIM_ENV_GCC_PREFIX_BASE)/riscv64-elf/11.1 \
-	RISCV64_ELF_GCC_TAG=refs/tags/2021.09.21 \
-	$(MAKE) build_riscv64_elf
-
-build_riscv64_elf:
-	mkdir -p $(SIM_ENV_GCC_PREFIX_BASE) ;\
-	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
-		git checkout $(RISCV64_ELF_GCC_TAG) -f ;\
+		git checkout $(GCC_GIT_TAG) -f ;\
 		git submodule update --init --recursive -f ;\
-		CFLAGS="-O2 -static" ./configure --prefix=$(RISCV64_ELF_GCC_PATH) --with-arch=rv64g ;\
+		./configure --prefix=$(GCC_PATH) --with-arch=rv64gc;\
+		$(MAKE) clean ;\
 		$(MAKE)
+
+$(TARGET_LINUX64):
+	$(eval VERSION_ID=$(patsubst build_riscv64_linux_%,%,$@))
+	$(eval GCC_VERSION=$(GCC_VERSION_$(VERSION_ID)))
+	$(eval GCC_GIT_TAG=$(GCC_GIT_TAG_$(VERSION_ID)))
+	$(eval GCC_PATH=$(SIM_ENV_GCC_PREFIX_BASE)/riscv64-linux/$(GCC_VERSION))
+	@echo version: $(GCC_VERSION)
+	@echo git: $(GCC_GIT_TAG)
+	mkdir -p $(SIM_ENV_GCC_PREFIX_BASE)
+	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
+		git checkout $(GCC_GIT_TAG) -f ;\
+		git submodule update --init --recursive -f ;\
+		./configure --prefix=$(GCC_PATH) --with-arch=rv64gc;\
+		$(MAKE) clean ;\
+		$(MAKE) linux
+
 
 # pull --tags はリモートからのタグの取得
 clone:
@@ -141,26 +116,12 @@ clone:
 		git pull --tags; \
 		git submodule update
 
-clone_shallow:
-	mkdir $(TMP_PATH) -p
-	cd $(TMP_PATH) ;\
-		git clone --depth 1 --single-branch -b v20180629 https://github.com/riscv/riscv-gnu-toolchain
-	cd $(TMP_PATH)/riscv-gnu-toolchain; \
-		git submodule update --init --recursive --recommend-shallow --depth 1 
-
-# 依存のあるものをインストール
-# root で実行する
-install_deps:
-	apt install autoconf automake autotools-dev curl libmpc-dev libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev
-
-
 clean:
 	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
 		$(MAKE) distclean
 
 distclean:
 	rm $(TMP_PATH) -f -r
-
 
 
 # make docker-build で Docker の初期化を行います
@@ -171,15 +132,23 @@ distclean:
 USER_NAME = $(shell whoami)
 
 # Docker コンテナ名
-DOCKER_CONTAINER_NAME = shioyadan-sim-env-riscv-compiler
+DOCKER_CONTAINER_NAME = $(USER_NAME)-sim-env-riscv-compiler
 
-# Docker コマンド
-# ホストのカレントディレクトリを /work にマウント
-# 起動したユーザーの ID でアクセスできるように外部から渡している
+# Docker イメージの実行
+# -v $(HOME):$(HOME) 							実行しているユーザの HOME をそのままコンテナ内にマウント
+# -e ENTRY_POINT_PATH=$(PWD) 					起動時の初期パスを渡す
+# -e USER_ID=$(shell id -u) -e GROUP_ID=$(shell id -g) -e USER_NAME=$(USER) 	ユーザー情報を渡す
+# -e DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix 	X11 アプリを起動するための設定
+# -v /dev/shm:/tmp 								ホストの /dev/shm を /tmp にマウント
 DOCKER_COMMAND = \
 	docker run -ti --rm \
-	-v $(PWD):/work -e USER_ID=$(shell id -u) -e GROUP_ID=$(shell id -g) \
+	-v $(HOME):$(HOME) \
+	-e ENTRY_POINT_PATH=$(PWD) \
+	-e USER_ID=$(shell id -u) -e GROUP_ID=$(shell id -g) -e USER_NAME=$(USER) \
+	-e DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix \
+	$(DOCKER_MOUNT_DEV_SHM) \
 	$(DOCKER_CONTAINER_NAME):latest 
+
 
 # Docker コンテナを初期化
 docker-build:
@@ -187,15 +156,8 @@ docker-build:
 
 # Docker 内シェルに入る
 docker-run:
-	$(DOCKER_COMMAND) 
-
-# Docker 外から gcc を直接起動
-docker-test-version:
-	$(DOCKER_COMMAND) /usr/local/gcc/riscv64-linux/11.1/bin/riscv64-unknown-linux-gnu-gcc --version
-
-docker-test-compile:
-	$(DOCKER_COMMAND) /usr/local/gcc/riscv64-linux/11.1/bin/riscv64-unknown-linux-gnu-gcc test.c -static
+	@$(DOCKER_COMMAND) 
 
 # 使用する際は事前に docker グループに自身を追加しておいてください
 docker-add-user:
-	gpasswd -a $(USER_NAME) docker
+	sudo usermod -aG docker $(USER_NAME)
