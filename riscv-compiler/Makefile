@@ -56,7 +56,7 @@ $(TARGET_ELF32):
 	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
 		git checkout $(GCC_GIT_TAG) -f ;\
 		git submodule update --init --recursive -f ;\
-		./configure --prefix=$(GCC_PATH) --with-arch=rv32gc;\
+		./configure --prefix=$(GCC_PATH) --with-arch=rv32g;\
 		$(MAKE) clean ;\
 		$(MAKE)
 
@@ -71,7 +71,7 @@ $(TARGET_LINUX32):
 	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
 		git checkout $(GCC_GIT_TAG) -f ;\
 		git submodule update --init --recursive -f ;\
-		./configure --prefix=$(GCC_PATH) --with-arch=rv32gc;\
+		./configure --prefix=$(GCC_PATH) --with-arch=rv32g;\
 		$(MAKE) clean ;\
 		$(MAKE) linux
 
@@ -86,7 +86,7 @@ $(TARGET_ELF64):
 	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
 		git checkout $(GCC_GIT_TAG) -f ;\
 		git submodule update --init --recursive -f ;\
-		./configure --prefix=$(GCC_PATH) --with-arch=rv64gc;\
+		./configure --prefix=$(GCC_PATH) --with-arch=rv64g;\
 		$(MAKE) clean ;\
 		$(MAKE)
 
@@ -101,7 +101,7 @@ $(TARGET_LINUX64):
 	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
 		git checkout $(GCC_GIT_TAG) -f ;\
 		git submodule update --init --recursive -f ;\
-		./configure --prefix=$(GCC_PATH) --with-arch=rv64gc;\
+		./configure --prefix=$(GCC_PATH) --with-arch=rv64g;\
 		$(MAKE) clean ;\
 		$(MAKE) linux
 
@@ -120,7 +120,7 @@ build_riscv32_elf_1410:
 	cd $(TMP_PATH)/riscv-gnu-toolchain/gcc ;\
 		git checkout cd0059a1976 -f
 	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
-		./configure --prefix=$(GCC_PATH) --with-arch=rv32gc;\
+		./configure --prefix=$(GCC_PATH) --with-arch=rv32g;\
 		$(MAKE) clean ;\
 		$(MAKE)
 
@@ -138,7 +138,7 @@ build_riscv64_linux_1410:
 	cd $(TMP_PATH)/riscv-gnu-toolchain/gcc ;\
 		git checkout cd0059a1976 -f
 	cd $(TMP_PATH)/riscv-gnu-toolchain ;\
-		./configure --prefix=$(GCC_PATH) --with-arch=rv64gc;\
+		./configure --prefix=$(GCC_PATH) --with-arch=rv64g;\
 		$(MAKE) clean ;\
 		$(MAKE) linux
 
