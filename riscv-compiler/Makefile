@@ -105,7 +105,8 @@ $(TARGET_LINUX64):
 		$(MAKE) clean ;\
 		$(MAKE) linux
 
-
+# 14.1 は手動で gcc のチェックアウトをする必要があるので個別のコマンドにしてある
+# 本家のリポジトリがアップデートされ次第，上記に統合
 build_riscv32_elf_1410:
 	$(eval VERSION_ID=$(patsubst build_riscv32_elf_%,%,$@))
 	$(eval GCC_VERSION=$(GCC_VERSION_$(VERSION_ID)))
